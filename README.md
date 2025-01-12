@@ -1,2 +1,2 @@
-# GitHubレビューコメント取得ツール
-https://torasagi.github.io/github-comments-viewer/
+# GitHub Comments Viewer
+https://saggie.github.io/github-comments-viewer/
