@@ -73,7 +73,7 @@ async function fetchComments() {
       noDataDiv.textContent = "";
       noDataDiv.style.display = "none";
     } else {
-      noDataDiv.textContent = `$No data found on page ${page}`;
+      noDataDiv.textContent = `No data found on page ${page}`;
       noDataDiv.style.display = "block";
     }
 
