@@ -137,7 +137,7 @@ function createCommentDiv(comment) {
   const diff = comment.diff_hunk.split("\n").slice(1).slice(-5).join("\n");
   const avatarURL = comment.user.avatar_url;
   const url = comment.html_url;
-  const date = toJPDate(comment.created_at);
+  const date = toUSDate(comment.created_at);
   const text = sanitizeHTML(comment.body);
 
   result.innerHTML = `
@@ -197,9 +197,9 @@ function toUTCDateTime(date) {
   return new Date(`${date}T00:00:00`).toISOString();
 }
 
-function toJPDate(isoString) {
+function toUSDate(isoString) {
   return new Date(isoString)
-    .toLocaleDateString("ja-JP", { year: "numeric", month: "2-digit", day: "2-digit" });
+    .toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
 }
 
 function enterLoading() {
