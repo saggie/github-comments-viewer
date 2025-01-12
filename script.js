@@ -1,4 +1,3 @@
-// グローバル変数、定数、キャッシュ
 let page = 1;
 const perPage = 30;
 const prCache = new Map();
@@ -8,7 +7,6 @@ const commentsDiv = document.getElementById("comments-container");
 const noDataDiv = document.getElementById("no-data");
 const getMoreButton = document.getElementById("get-more");
 
-// 初期値の設定
 document.addEventListener("DOMContentLoaded", () => {
   const monthsAgo = new Date();
   monthsAgo.setMonth(monthsAgo.getMonth() - 3);
@@ -16,20 +14,17 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("since").value = since;
 });
 
-// 「コメント取得」ボタンのクリックイベント
 getCommentsButton.addEventListener("click", (event) => {
   page = 1;
   clearComments();
   fetchComments();
 });
 
-// 「さらに取得」ボタンのクリックイベント
 getMoreButton.addEventListener("click", () => {
   page++;
   fetchComments();
 });
 
-// コメントをクリアする関数
 function clearComments() {
   commentsDiv.innerHTML = "";
   commentsDiv.style.display = "none";
@@ -37,9 +32,7 @@ function clearComments() {
   getMoreButton.style.display = "none";
 }
 
-// コメントを取得してレンダリングする関数
 async function fetchComments() {
-  // フォームの入力値を取得
   const owner = document.getElementById("owner").value.trim();
   const repo = document.getElementById("repo").value.trim();
   const since = document.getElementById("since").value;
@@ -58,7 +51,6 @@ async function fetchComments() {
 
   enterLoading();
   try {
-    // コメント一覧取得API実行
     const response = await fetch(url, { headers });
     const data = await response.json();
 
@@ -66,45 +58,38 @@ async function fetchComments() {
       throw new Error(`${data.message} [${response.status}]`);
     }
 
-    // 指定されたユーザーのコメントのみをフィルタリング
     const comments = username
       ? data.filter(it => it.user.login === username)
       : data;
 
-    // コメント先のプルリクエストを取得
     await fetchPullRequests(comments, headers);
 
-    // 自己コメントを除外している場合
     const filteredComments = username && excludeSelf
       ? comments.filter(it => prCache.get(it.pull_request_url).author !== username)
       : comments;
 
     if (filteredComments.length > 0) {
-      // HTMLにレンダリングする
       renderComments(filteredComments);
       noDataDiv.textContent = "";
       noDataDiv.style.display = "none";
     } else {
-      // 「該当データなし」を表示
-      noDataDiv.textContent = `${page}ページ目: 該当データなし`;
+      noDataDiv.textContent = `$No data found on page ${page}`;
       noDataDiv.style.display = "block";
     }
 
-    // 「さらに取得」ボタンの表示・非表示を制御
     if (data.length === perPage) {
-      getMoreButton.textContent = `さらに取得 (${page + 1}ページ目)`;
+      getMoreButton.textContent = `Load More (Page ${page + 1})`;
       getMoreButton.style.display = "block";
     } else {
       getMoreButton.style.display = "none";
     }
   } catch (error) {
-    alert(`コメントの取得に失敗しました: ${error.message}`);
+    alert(`Failed to fetch comments: ${error.message}`);
   } finally {
     exitLoading();
   }
 }
 
-// コメント先のプルリクエストを取得する関数
 async function fetchPullRequests(comments, headers) {
   for (const comment of comments) {
     const prUrl = comment.pull_request_url;
@@ -112,14 +97,12 @@ async function fetchPullRequests(comments, headers) {
   }
 }
 
-// プルリクエストを取得してキャッシュする関数
 async function fetchPullRequest(prUrl, headers) {
-  if (prCache.has(prUrl)) return; // 既に取得済みの場合はスキップ
+  if (prCache.has(prUrl)) return;
 
   const response = await fetch(prUrl, { headers });
   const data = await response.json();
 
-  // レスポンスが成功の場合、キャッシュに保存
   if (response.ok) {
     const result = {
       title: data.title,
@@ -131,7 +114,6 @@ async function fetchPullRequest(prUrl, headers) {
     prCache.set(prUrl, result);
   } else {
     if (response.status === 404) {
-      // 見つからない（削除された）場合
       const result = { title: "(Not Found)", author: "???", avatarURL: "#", url: "#", number: "???" }
       prCache.set(prUrl, result);
     } else {
@@ -140,14 +122,12 @@ async function fetchPullRequest(prUrl, headers) {
   }
 }
 
-// コメントをHTMLにレンダリングする関数
 function renderComments(comments) {
   const newCommentDivs = comments.map(it => createCommentDiv(it));
   commentsDiv.append(...newCommentDivs);
   commentsDiv.style.display = "block";
 }
 
-// コメントデータを表示用のDiv要素に変換する関数
 function createCommentDiv(comment) {
   const result = document.createElement("div");
   result.className = "comment";
@@ -162,7 +142,6 @@ function createCommentDiv(comment) {
 
   result.innerHTML = `
     <div class="comment-header flex-row">
-      <!-- ヘッダー部分 -->
       <div>${prIcon}</div>
       <div><b>${pr.title}</b></div>
       <div><a href="${pr.url}" target="_blank">#${pr.number}</a></div>
@@ -172,7 +151,6 @@ function createCommentDiv(comment) {
     </div>
 
     <div class="comment-body">
-      <!--コメント本体部分 -->
       <div class="filepath flex-row">
         <div>${fileIcon}</div>
         <div>${filepath}</div>
