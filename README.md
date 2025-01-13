@@ -2,4 +2,4 @@
 
 🌐 https://saggie.github.io/github-comments-viewer/
 
-Easily view and filter review comments on pull requests from **any** GitHub repository! 🚀✨
+Quickly & easily explore review comments on pull requests from **any** GitHub repository! 🚀✨
